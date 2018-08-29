@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "bower": "^1.8.4",
+    "pulp": "^12.3.0",
+    "purescript": "^0.12.0"
+  }
+}
