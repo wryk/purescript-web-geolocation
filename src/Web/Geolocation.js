@@ -1,41 +1,13 @@
 "use strict";
 
-exports.getCurrentPosition = function (options) {
-	return function (errorFunction) {
-		return function (successFunction) {
-			return function (geolocation) {
-				return function () {
-					geolocation.getCurrentPosition(function (position) {
-						successFunction(position)();
-					}, function (error) {
-						errorFunction(error)();
-					}, options);
-				};
-			};
-		};
-	};
+exports.getCurrentPositionImpl = function (options, errorCallback, successCallback, geolocation) {
+	geolocation.getCurrentPosition(successCallback, errorCallback, options);
 };
 
-exports._watchPosition = function (options) {
-	return function (errorFunction) {
-		return function (successFunction) {
-			return function (geolocation) {
-				return function () {
-					return geolocation.watchPosition(function (position) {
-						successFunction(position)();
-					}, function (error) {
-						errorFunction(error)();
-					}, options);
-				};
-			};
-		};
-	};
+exports.watchPositionImpl = function (options, errorCallback, successCallback, geolocation) {
+	return geolocation.watchPosition(successCallback, errorCallback, options);
 };
 
-exports._clearWatch = function (id) {
-	return function (geolocation) {
-		return function () {
-			geolocation.clearWatch(id);
-		};
-	};
+exports.clearWatchImpl = function (id, geolocation) {
+	geolocation.clearWatch(id);
 };

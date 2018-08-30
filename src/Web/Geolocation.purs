@@ -10,6 +10,7 @@ module Web.Geolocation
 import Prelude
 
 import Effect (Effect)
+import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn4, mkEffectFn1, runEffectFn2, runEffectFn4)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Number (infinity)
 import Web.Geolocation.Position (Position)
@@ -25,12 +26,21 @@ defaultOptions =
 	, maximumAge: 0.0
 	}
 
-foreign import getCurrentPosition
+foreign import getCurrentPositionImpl
+	:: EffectFn4
+		PositionOptions
+		(EffectFn1 PositionError Unit)
+		(EffectFn1 Position Unit)
+		Geolocation
+		Unit
+
+getCurrentPosition
 	:: PositionOptions
 	-> (PositionError -> Effect Unit)
 	-> (Position -> Effect Unit)
 	-> Geolocation
 	-> Effect Unit
+getCurrentPosition o e s = runEffectFn4 getCurrentPositionImpl o (mkEffectFn1 e) (mkEffectFn1 s)
 
 newtype WatchPositionId = WatchPositionId Int
 
@@ -38,12 +48,13 @@ derive instance newtypeWatchPositionId :: Newtype WatchPositionId _
 derive instance eqWatchPositionId :: Eq WatchPositionId
 derive instance ordWatchPositionId :: Ord WatchPositionId
 
-foreign import _watchPosition
-	:: PositionOptions
-	-> (PositionError -> Effect Unit)
-	-> (Position -> Effect Unit)
-	-> Geolocation
-	-> Effect Int
+foreign import watchPositionImpl
+	:: EffectFn4
+		PositionOptions
+		(EffectFn1 PositionError Unit)
+		(EffectFn1 Position Unit)
+		Geolocation
+		Int
 
 watchPosition
 	:: PositionOptions
@@ -51,9 +62,9 @@ watchPosition
 	-> (Position -> Effect Unit)
 	-> Geolocation
 	-> Effect WatchPositionId
-watchPosition o e s = map WatchPositionId <<< _watchPosition o e s
+watchPosition o e s = map WatchPositionId <<< runEffectFn4 watchPositionImpl o (mkEffectFn1 e) (mkEffectFn1 s)
 
-foreign import _clearWatch :: Int -> Geolocation -> Effect Unit
+foreign import clearWatchImpl :: EffectFn2 Int Geolocation Unit
 
-clearWatch :: WatchPositionId -> Geolocation  -> Effect Unit
-clearWatch watchPositionId  = _clearWatch (unwrap watchPositionId)
+clearWatch :: WatchPositionId -> Geolocation -> Effect Unit
+clearWatch watchPositionId = runEffectFn2 clearWatchImpl (unwrap watchPositionId)
