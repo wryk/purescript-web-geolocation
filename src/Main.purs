@@ -28,7 +28,7 @@ main = do
 				let c = GP.coords position
 				log $ (show $ GC.latitude c) <> " " <> (show $ GC.longitude c)
 
-			_ <- G.getCurrentPosition G.defaultOptions onError onSuccess g
+			_ <- G.getCurrentPosition { enableHighAccuracy: false } onError onSuccess g
 			pure unit
 
 		Nothing -> do

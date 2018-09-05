@@ -1,10 +1,10 @@
 module Web.Geolocation
 	( Geolocation
+	, Options
 	, getCurrentPosition
 	, watchPosition
 	, clearWatch
 	, WatchPositionId
-	, defaultOptions
 	) where
 
 import Prelude
@@ -12,30 +12,31 @@ import Prelude
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn4, mkEffectFn1, runEffectFn2, runEffectFn4)
 import Data.Newtype (class Newtype, unwrap)
-import Data.Number (infinity)
+import Type.Row (class Union)
 import Web.Geolocation.Position (Position)
 import Web.Geolocation.PositionError (PositionError)
-import Web.Geolocation.PositionOptions (PositionOptions)
 
 foreign import data Geolocation :: Type
 
-defaultOptions :: PositionOptions
-defaultOptions =
-	{ enableHighAccuracy: false
-	, timeout: infinity
-	, maximumAge: 0.0
-	}
+type Options =
+	( enableHighAccuracy :: Boolean
+	, timeout :: Number
+	, maximumAge :: Number
+	)
 
 foreign import getCurrentPositionImpl
-	:: EffectFn4
-		PositionOptions
+	:: ∀ options
+	. EffectFn4
+		(Record options)
 		(EffectFn1 PositionError Unit)
 		(EffectFn1 Position Unit)
 		Geolocation
 		Unit
 
 getCurrentPosition
-	:: PositionOptions
+	:: ∀ options trash
+	. Union options trash Options
+	=> Record options
 	-> (PositionError -> Effect Unit)
 	-> (Position -> Effect Unit)
 	-> Geolocation
@@ -49,15 +50,18 @@ derive instance eqWatchPositionId :: Eq WatchPositionId
 derive instance ordWatchPositionId :: Ord WatchPositionId
 
 foreign import watchPositionImpl
-	:: EffectFn4
-		PositionOptions
+	:: ∀ options
+	. EffectFn4
+		(Record options)
 		(EffectFn1 PositionError Unit)
 		(EffectFn1 Position Unit)
 		Geolocation
 		Int
 
 watchPosition
-	:: PositionOptions
+	:: ∀ options trash
+	. Union options trash Options
+	=> Record options
 	-> (PositionError -> Effect Unit)
 	-> (Position -> Effect Unit)
 	-> Geolocation
