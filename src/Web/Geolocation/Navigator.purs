@@ -7,7 +7,7 @@ import Prelude
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Web.HTML.Navigator (Navigator)
-import Web.Geolocation (Geolocation)
+import Web.Geolocation.Geolocation (Geolocation)
 
 foreign import _geolocation :: Navigator -> Nullable Geolocation
 

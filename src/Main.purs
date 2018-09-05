@@ -5,11 +5,11 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Console (log)
-import Web.Geolocation as G
-import Web.Geolocation.Coordinates as GC
-import Web.Geolocation.Navigator as GN
-import Web.Geolocation.Position as GP
-import Web.Geolocation.PositionError as GPE
+import Web.Geolocation.Geolocation as G
+import Web.Geolocation.Coordinates as C
+import Web.Geolocation.Navigator as N
+import Web.Geolocation.Position as P
+import Web.Geolocation.PositionError as PE
 import Web.HTML (window)
 import Web.HTML.Window (navigator)
 
@@ -17,16 +17,16 @@ main :: Effect Unit
 main = do
 	n <- window >>= navigator
 
-	case GN.geolocation n of
+	case N.geolocation n of
 		Just g -> do
 			log "geolocation available"
 
 			let onError = \error ->
-				log $ "[" <> (show $ GPE.code $ error) <> "] " <> (GPE.message error)
+				log $ "[" <> (show $ PE.code $ error) <> "] " <> (PE.message error)
 
 			let onSuccess = \position -> do
-				let c = GP.coords position
-				log $ (show $ GC.latitude c) <> " " <> (show $ GC.longitude c)
+				let c = P.coords position
+				log $ (show $ C.latitude c) <> " " <> (show $ C.longitude c)
 
 			_ <- G.getCurrentPosition { enableHighAccuracy: false } onError onSuccess g
 			pure unit

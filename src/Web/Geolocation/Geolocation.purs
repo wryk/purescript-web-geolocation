@@ -1,4 +1,4 @@
-module Web.Geolocation
+module Web.Geolocation.Geolocation
 	( Geolocation
 	, Options
 	, getCurrentPosition
