@@ -10,7 +10,11 @@ module Web.Geolocation.Geolocation
 import Prelude
 
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn4, mkEffectFn1, runEffectFn2, runEffectFn4)
+import Effect.Uncurried
+	( EffectFn1, EffectFn3, EffectFn4, EffectFn5
+	, mkEffectFn1
+	, runEffectFn3, runEffectFn4, runEffectFn5
+	)
 import Data.Newtype (class Newtype, unwrap)
 import Type.Row (class Union)
 import Web.Geolocation.Position (Position)
@@ -26,7 +30,8 @@ type Options =
 
 foreign import getCurrentPositionImpl
 	:: ∀ options
-	. EffectFn4
+	. EffectFn5
+		Unit
 		(Record options)
 		(EffectFn1 PositionError Unit)
 		(EffectFn1 Position Unit)
@@ -41,7 +46,7 @@ getCurrentPosition
 	-> (Position -> Effect Unit)
 	-> Geolocation
 	-> Effect Unit
-getCurrentPosition o e s = runEffectFn4 getCurrentPositionImpl o (mkEffectFn1 e) (mkEffectFn1 s)
+getCurrentPosition o e s = runEffectFn5 getCurrentPositionImpl unit o (mkEffectFn1 e) (mkEffectFn1 s)
 
 newtype WatchPositionId = WatchPositionId Int
 
@@ -68,7 +73,7 @@ watchPosition
 	-> Effect WatchPositionId
 watchPosition o e s = map WatchPositionId <<< runEffectFn4 watchPositionImpl o (mkEffectFn1 e) (mkEffectFn1 s)
 
-foreign import clearWatchImpl :: EffectFn2 Int Geolocation Unit
+foreign import clearWatchImpl :: EffectFn3 Unit Int Geolocation Unit
 
 clearWatch :: WatchPositionId -> Geolocation -> Effect Unit
-clearWatch watchPositionId = runEffectFn2 clearWatchImpl (unwrap watchPositionId)
+clearWatch watchPositionId = runEffectFn3 clearWatchImpl unit (unwrap watchPositionId)
