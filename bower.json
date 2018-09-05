@@ -1,4 +1,6 @@
 {
+  "private": true,
+  "name": "purescript-web-geolocation",
   "license": "MIT",
   "ignore": [
     "**/.*",
