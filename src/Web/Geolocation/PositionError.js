@@ -1,6 +1,6 @@
 "use strict";
 
-exports.code = function (positionError) {
+exports.codeImpl = function (positionError) {
 	return positionError.code;
 };
 
